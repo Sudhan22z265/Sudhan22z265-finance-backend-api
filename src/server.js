@@ -26,6 +26,18 @@ async function startServer() {
         await db.raw('SELECT 1');
         logger.info('Database connection successful');
 
+        // Check if migrations need to be run
+        try {
+            await db.raw('SELECT * FROM knex_migrations LIMIT 1');
+            logger.info('Database tables already exist');
+        } catch (error) {
+            // Tables don't exist, run migrations
+            logger.info('Database tables not found, running migrations...');
+            const { execSync } = require('child_process');
+            execSync('npm run migrate:latest', { stdio: 'inherit' });
+            logger.info('Database migrations completed successfully');
+        }
+
         // Start Express server
         server = app.listen(PORT, () => {
             logger.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
