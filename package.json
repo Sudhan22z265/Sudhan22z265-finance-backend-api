@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
-    "migrate:make": "knex migrate:make"
+    "migrate:make": "knex migrate:make",
+    "setup:database": "node setup-database.js"
   },
   "keywords": [
     "finance",
