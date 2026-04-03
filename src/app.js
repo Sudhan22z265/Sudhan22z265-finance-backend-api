@@ -113,15 +113,6 @@ app.use('/api/users', generalRateLimit, userRoutes);
 app.use('/api/records', generalRateLimit, recordRoutes);
 app.use('/api/dashboard', generalRateLimit, dashboardRoutes);
 
-// Handle invalid HTTP methods for API routes
-app.use('/api/*', (req, res, next) => {
-    res.status(405).json({
-        error: 'METHOD_NOT_ALLOWED',
-        message: `Method ${req.method} not allowed for ${req.path}`,
-        allowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-    });
-});
-
 // 404 handler for undefined routes
 app.use((req, res) => {
     res.status(404).json({

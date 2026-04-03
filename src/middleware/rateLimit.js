@@ -48,14 +48,6 @@ const generalRateLimit = rateLimit({
             message: 'Too many requests from this IP, please try again later.',
             retryAfter: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
         });
-    },
-    // Add headers to all responses, not just rate limited ones
-    onLimitReached: (req, res) => {
-        res.set({
-            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS,
-            'X-RateLimit-Remaining': 0,
-            'X-RateLimit-Reset': new Date(Date.now() + RATE_LIMIT_WINDOW_MS).toISOString()
-        });
     }
 });
 
