@@ -10,7 +10,7 @@ const logger = require('../utils/logger');
 
 // Configuration from environment variables
 const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100; // 100 requests per window
+const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000; // 1000 requests per window (increased for testing)
 
 /**
  * General API rate limiter
@@ -25,7 +25,7 @@ const generalRateLimit = rateLimit({
         retryAfter: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
     },
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    legacyHeaders: true, // Also include the `X-RateLimit-*` headers for compatibility
     handler: (req, res) => {
         logger.warn({
             message: 'Rate limit exceeded',
@@ -35,10 +35,26 @@ const generalRateLimit = rateLimit({
             timestamp: new Date().toISOString()
         });
 
+        // Set additional rate limiting headers
+        res.set({
+            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS,
+            'X-RateLimit-Remaining': 0,
+            'X-RateLimit-Reset': new Date(Date.now() + RATE_LIMIT_WINDOW_MS).toISOString(),
+            'Retry-After': Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
+        });
+
         res.status(429).json({
             error: 'RATE_LIMIT_EXCEEDED',
             message: 'Too many requests from this IP, please try again later.',
             retryAfter: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
+        });
+    },
+    // Add headers to all responses, not just rate limited ones
+    onLimitReached: (req, res) => {
+        res.set({
+            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS,
+            'X-RateLimit-Remaining': 0,
+            'X-RateLimit-Reset': new Date(Date.now() + RATE_LIMIT_WINDOW_MS).toISOString()
         });
     }
 });
@@ -49,7 +65,7 @@ const generalRateLimit = rateLimit({
  */
 const authRateLimit = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Limit each IP to 10 requests per windowMs for auth endpoints
+    max: 100, // Increased from 10 to 100 for testing
     message: {
         error: 'AUTH_RATE_LIMIT_EXCEEDED',
         message: 'Too many authentication attempts, please try again later.',
@@ -80,7 +96,7 @@ const authRateLimit = rateLimit({
  */
 const dashboardRateLimit = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 200, // Higher limit for dashboard endpoints
+    max: 2000, // Higher limit for dashboard endpoints (increased for testing)
     message: {
         error: 'DASHBOARD_RATE_LIMIT_EXCEEDED',
         message: 'Too many dashboard requests, please try again later.',

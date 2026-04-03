@@ -13,6 +13,23 @@ const { ValidationError } = require('../utils/errors');
  * Extracts validation errors and throws ValidationError
  */
 const handleValidationErrors = (req, res, next) => {
+    // Check for null values in request body
+    if (req.body && typeof req.body === 'object') {
+        for (const [key, value] of Object.entries(req.body)) {
+            if (value === null) {
+                return res.status(400).json({
+                    error: 'VALIDATION_ERROR',
+                    message: 'Null values are not allowed',
+                    details: [{
+                        field: key,
+                        message: 'Field cannot be null',
+                        value: null
+                    }]
+                });
+            }
+        }
+    }
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -156,6 +173,25 @@ const validateCreateRecord = [
         .trim()
         .escape() // Sanitize to prevent XSS
         .isLength({ max: 5000 }).withMessage('Notes must not exceed 5000 characters')
+        .custom((value) => {
+            // Additional XSS prevention - reject script tags and javascript: protocols
+            if (!value) return true; // Skip validation for empty values
+            const dangerousPatterns = [
+                /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+                /javascript:/gi,
+                /on\w+\s*=/gi,
+                /<iframe/gi,
+                /<object/gi,
+                /<embed/gi
+            ];
+
+            for (const pattern of dangerousPatterns) {
+                if (pattern.test(value)) {
+                    throw new Error('Invalid characters detected in notes field');
+                }
+            }
+            return true;
+        })
 ];
 
 /**
@@ -187,6 +223,25 @@ const validateUpdateRecord = [
         .trim()
         .escape() // Sanitize to prevent XSS
         .isLength({ max: 5000 }).withMessage('Notes must not exceed 5000 characters')
+        .custom((value) => {
+            // Additional XSS prevention - reject script tags and javascript: protocols
+            if (!value) return true; // Skip validation for empty values
+            const dangerousPatterns = [
+                /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+                /javascript:/gi,
+                /on\w+\s*=/gi,
+                /<iframe/gi,
+                /<object/gi,
+                /<embed/gi
+            ];
+
+            for (const pattern of dangerousPatterns) {
+                if (pattern.test(value)) {
+                    throw new Error('Invalid characters detected in notes field');
+                }
+            }
+            return true;
+        })
 ];
 
 /**

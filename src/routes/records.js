@@ -50,11 +50,11 @@ router.post(
 /**
  * @route   GET /api/records
  * @desc    Get all financial records with filtering and pagination
- * @access  Analyst and Admin
+ * @access  Analyst and Admin (Viewer should not access individual records)
  */
 router.get(
     '/',
-    requireAnalyst,
+    requireAnalyst, // This correctly restricts Viewer access
     validateRecordFilters,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
@@ -80,11 +80,11 @@ router.get(
 /**
  * @route   GET /api/records/:id
  * @desc    Get financial record by ID
- * @access  Analyst and Admin
+ * @access  Analyst and Admin (Viewer should not access individual records)
  */
 router.get(
     '/:id',
-    requireAnalyst,
+    requireAnalyst, // This correctly restricts Viewer access
     validateRecordId,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
