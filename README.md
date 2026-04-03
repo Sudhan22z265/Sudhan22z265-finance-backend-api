@@ -105,7 +105,9 @@ Before running this application, ensure you have:
 ```bash
 npm run dev
 ```
-The server will start on `http://localhost:3000` with auto-reload enabled.
+The server will start on `http://localhost:3000` with auto-reload enabled for development.
+
+**Live Production API**: `https://finance-backend-api-2b75.onrender.com`
 
 ### Production Mode
 ```bash
@@ -113,7 +115,9 @@ npm start
 ```
 
 ### Health Check
-Visit `http://localhost:3000/health` to verify the server is running.
+
+**Development**: Visit `http://localhost:3000/health` to verify the local server is running.
+**Production**: Visit `https://finance-backend-api-2b75.onrender.com/health` to verify the live API is running.
 
 ## Running Tests
 

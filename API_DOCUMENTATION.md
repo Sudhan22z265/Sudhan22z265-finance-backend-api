@@ -2,10 +2,16 @@
 
 This document provides comprehensive documentation for all API endpoints in the Finance Backend system.
 
+## 🚀 Live API
+
+**Production URL**: `https://finance-backend-api-2b75.onrender.com`
+
+The API is live and ready for use! All examples below use the production URL.
+
 ## Base URL
 
 ```
-http://localhost:3000/api
+https://finance-backend-api-2b75.onrender.com/api
 ```
 
 ## Authentication
@@ -794,7 +800,7 @@ Check if the API is running and database is connected.
 
 ```bash
 # 1. Register a new user
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST https://finance-backend-api-2b75.onrender.com/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin_user",
@@ -804,7 +810,7 @@ curl -X POST http://localhost:3000/api/auth/register \
   }'
 
 # 2. Login to get token
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://finance-backend-api-2b75.onrender.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin_user",
@@ -812,7 +818,7 @@ curl -X POST http://localhost:3000/api/auth/login \
   }'
 
 # 3. Create a financial record (use token from login)
-curl -X POST http://localhost:3000/api/records \
+curl -X POST https://finance-backend-api-2b75.onrender.com/api/records \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -824,7 +830,7 @@ curl -X POST http://localhost:3000/api/records \
   }'
 
 # 4. Get dashboard summary
-curl -X GET http://localhost:3000/api/dashboard/summary \
+curl -X GET https://finance-backend-api-2b75.onrender.com/api/dashboard/summary \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
